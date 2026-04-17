@@ -40,6 +40,7 @@ public class FurnitureManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
     //ft                : FurnitureTap의 준말
     //furnitureState    : 하우징 모드의 상태. 1 == On, 0 == Off, 2 == ing, -1 == 설치오류
+    //2026: isClickBtn  : 하우징 on, off 활성화할 때 사용.
     //chairNum          : 모든 Chair들을 조사. Direction이 0인 의자가 있을 때마다 값이 +1씩 오름.
     private Animator ft_animator;
     private int furnitureState = 0;
@@ -116,7 +117,7 @@ public class FurnitureManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         furnitureState = 0;
         isCilckBtn = false;
 
-        //처음 시작할 때 모든 가구들에 '잠금'을 달아둔다. 본 '잠금'은 단순한 오브젝트에 불과하다.
+        //2026: 처음 시작할 때 모든 가구들에 '잠금'을 달아둔다. 본 '잠금'은 단순한 오브젝트에 불과하다.
         for (int i = 0; i < tagObj.Length; i++)
         {
             GameObject lockobj = (GameObject)Instantiate(lockup, tagObj[i].transform.position, Quaternion.identity);
@@ -216,6 +217,7 @@ public class FurnitureManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         {
             var _c = l_chair.GetEnumerator();
 
+            //2026: 의자 자체가 하나도 없을 때 에러 출력.
             if (l_chair.Count == 0)
             {
                 errorObj.SetActive(true);
@@ -242,6 +244,7 @@ public class FurnitureManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
                 }
             }*/
 
+            //2026: 모든 의자들을 조사. 의자-테이블의 연결이 하나라도 있는지 확인.
             for (int i = 0; i < l_chair.Count; i++)
             {
                 _c.MoveNext();
@@ -253,6 +256,7 @@ public class FurnitureManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
                 else { chairNum = 0; }
             }
 
+            //2026: 모든 의자 조사 결과, 의자-테이블 연결이 하나도 없을 때 에러 출력.
             if(chairNum == l_chair.Count)
             {
                 errorObj.SetActive(true);
@@ -272,6 +276,7 @@ public class FurnitureManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         else if (isCilckBtn == false)
         {
             //if, table과 chair가 만나는 상황이 아니라면 or 테이블 및 의자를 생성하지 않았다면
+            //2026: 위의 if문(if (furnitureState == -1))과 내용이 같음. 따로 생성해둔 이유를 알 수 없음.
             var _c = l_chair.GetEnumerator();
 
             if(l_chair.Count == 0)
@@ -324,6 +329,7 @@ public class FurnitureManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             furnitureState = 0;
         }
 
+        //2026: 애니메이션 부분
         if (furnitureState == 1)
         {
             ft_animator.SetTrigger("FurnitureTapUp");
@@ -339,7 +345,7 @@ public class FurnitureManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     {
         //설치할 가구를 들 때(클릭했을 때) 호출되는 함수
         //UI를 눌렀을 때 호출됨.
-
+        //2026: 아래의 if문이 왜 있는지 불명. Furniture UI에서 오브젝트의 태그를 지정하는 상황인 건 알겠으나, 그렇다면 FurnitureTap이 아닐 때 return을 하는 게 나았을 것.
         if (obj.tag == "Furniture")
         {
             return;
@@ -355,6 +361,7 @@ public class FurnitureManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
 
         ob_mouseController.GetComponent<BoxCollider2D>().size = new Vector2(float.Parse(sizes[0]), float.Parse(sizes[1]));
 
+        //설치하려고 누른 가구가 만약 '의자'일 때, 그리고 그것이 아닐 때를 구분.
         if (nowName.Substring(nowName.Length - 1, 1) == "C")
         {
             ob_mouseController.GetComponent<MouseTrigger>().SetFurnitureKind("C");
@@ -374,6 +381,7 @@ public class FurnitureManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     {
         //가구를 설치할 때 호출되는 함수. 실제로 오브젝트를 생성하는 함수.
         //일단 가구를 생성하고 나머지는 FurnitureBtn()쪽에서 해결함.
+        //2026: 여기서 obj는 '배치하려는 장소'에 가깝다. 배치하려는 장소에 '가구'가 배치되어 있으면 계속 배치 상태에 놓이게 된다.
         if (obj.tag == "Furniture")
         {
             ob_mouseController.GetComponent<SpriteRenderer>().sprite = m_sprite;
@@ -381,6 +389,7 @@ public class FurnitureManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             return;
         }
 
+        //2026: '타일 형식으로 배치했을 때' 이용했던 코드. 언제 다시 롤백할지 알 수 없어 남겨두었다.
         //string tileLayerNameNum = obj.name.Substring(obj.name.Length - 1);
         //int tileLayer = int.Parse(tileLayerNameNum);
 
@@ -517,7 +526,7 @@ public class FurnitureManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         }
 
         //만약 수정하려는 것이 '의자'라고 한다면
-        //이것을 왜 위의 if문에서 처리하지 않았는지는 불명.
+        //2026: 이것을 왜 위의 if문에서 처리하지 않았는지는 불명.
         if (obj.name.Substring(obj.name.Length - 1, 1) == "C")
         {
             l_chair.Remove(obj);
@@ -529,6 +538,7 @@ public class FurnitureManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     //벽지, 바닥, 테이블바, 문 가구를 배치하려 할 때 호출됨.
     public void FWBD(GameObject obj)
     {
+        //2026: 가구 배치와 다르게 벽지, 바닥, 테이블바, 문은 이미지(Sprite)만 변경하면 되기 때문에 따로 관리.
         if (obj.GetComponent<FurnitureData>().f_type == "wall")
         {
             wallObj.GetComponent<SpriteRenderer>().sprite = obj.GetComponent<Image>().sprite;
@@ -557,7 +567,7 @@ public class FurnitureManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         string type_FS;
         string type_FC;
 
-        //_f는 가구 수를 저장하기 위한 연결 리스트의 주소지 역할 중. 그대로 사용하면 데이터 오염이 있기 때문.
+        //2026: _f는 가구 수를 저장하기 위한 연결 리스트의 주소지 역할 중. 그대로 사용하면 데이터 오염이 있기 때문.
         var _f = l_furnitureUI.GetEnumerator();
 
         for (int i = 0; i < l_furnitureUI.Count; i++)
@@ -604,11 +614,13 @@ public class FurnitureManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         //이 함수는 Sorting에 대한 함수. 모든 tag 버튼들은 해당 함수를 쓰도록 할 것.
         //의자부터 Sorting하는 방법을 알아내야함...
         //UI를 '불러와서' 자리를 배치해야만함.
-        //조건이 아닌 UI는 _f.Current.GetGameObject().SetActive(false). 
+        //조건이 아닌 UI는 _f.Current.GetGameObject().SetActive(false).
+        //2026: UI 내부의 '가구 아이콘'에 적용하는 함수. '가구 테마 해금 관련 함수'는 LockdownFurnitureUI)에 구현되어 있다.
 
         UIName = EventSystem.current.currentSelectedGameObject.name;
         var _f = l_furnitureUI.GetEnumerator();
 
+        //2026: 게임 내 UI 이름이(테마 설정 버튼의 이름이) 'Normal', 'SeaKingdom', 'Heaven', 'Halloween', 'Floor', 'Wall'이어야만 제대로 동작한다.
         if (GameManager.GM.GetFame() < 100)
         {
             //호감도가 100 이하면 Normal 이외의 태그를 눌러도 아무런 행동을 하지 않도록 함.
@@ -640,6 +652,8 @@ public class FurnitureManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             if(furnitureTag_fw == 1)
             {
                 //바닥 장식만 표시
+                //2026: Contains(...) : ... 안에 들어간 문자열이 있는지 확인. 있으면 true.
+                //2026: decoration 키워드가 들어간 것들은 'table', 'chair', 'floor', 'tablebar' 등이 아닌 가구. plant, clock, moblie 등이 존재한다.
                 if (_f.Current.GetTheme() == "normal" &&
                     (_f.Current.GetFurnitureType().Contains("floor-decoration") ||
                     _f.Current.GetFurnitureType() == "table" ||
@@ -758,6 +772,11 @@ public class FurnitureManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         //해당 if문은 '기본', '용궁' 등의 테마 이미지와 관련된 if문.
         //단지 회색처리를 할 건지, 안 할 건지만 결정.
         //처리가 엉성하게 되어 있으니 추후 고칠 수 있으면 고쳐둘 것.
+
+        //2026: 하드 코딩으로 이루어져 있다. 0: Normal, 1: SeaKingdom, 2: Heaven, 3: Halloween, 4:  Floor, 5: Wall
+        //2026: 인게임에서 얻을 수 있는 명성에 따라 가구가 해금되는데, 본 함수는 '가구 자체의 해금'이 아니라, '가구의 테마 해금'에 가깝다.
+        //2026: 덧붙여, '특정 테마를 눌렀을 때' 현재 어떤 테마를 눌렀냐를 따져서 색상이 달라진다.
+        //2026: '가구 자체의 해금'(아이콘 해금) 함수는 SortingFurnitureUI()에 구현되어 있다.
         if (GameManager.GM.GetFame() < 100)
         {
             tagObj[0].gameObject.GetComponent<Image>().color = new Color(0.7f, 0.7f, 0.7f);
@@ -827,6 +846,8 @@ public class FurnitureManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     public void SortingFurnitureUITextArea()
     {
         //하드코딩으로 하게 되었음.........
+        //2026: UI 설명을 위한 칸. '테이블 항목에 있는 0성 테이블과 1성 테이블'이라는 말이 있다면, '테이블 항목'을 명시하는 코드.
+        //2026: 설명 위치는 유니티에서 게임 오브젝트들로 미리 잡아둔 상태. 이 게임 오브젝트를 감싸는 부모 오브젝트를 textArea_UI로 받아서 사용 중이다.
 
         //기본-바닥
         if (furnitureTag == "Normal" && furnitureTag_fw == 1)
