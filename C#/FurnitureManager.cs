@@ -757,6 +757,9 @@ public class FurnitureManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         //구매 수 > 사용 수 일 때 FurnitureDeployment()가 동작할 수 있도록 설계됨.
         //가구 UI 오브젝트가 Button 오브젝트로 변경되며 생성한 함수.
         //입력 파라미터의 click은 가구 UI 오브젝트 자기 자신을 받으면 됨.
+        
+        //2026: 카탈로그 내의 가구 이미지(게임 오브젝트, 버튼)로부터 호출되는 함수. 유니티 내에서 이 함수를 지정해두어야 한다.
+        //2026: 혹시나 값이 오염될 것을 고려하여 bool 타입 변수를 선언해서 활용하려고 했던 것으로 기억한다.
         bool judge = FC_UseBuyJudge(click);
         if (judge == true)
         {
@@ -993,6 +996,7 @@ public class FurnitureManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             if (_f.Current.GetSerialNumber() == f.GetSerialNumber())
             {
                 //현재 UseNum과 BuyNum이 다르다면 새로 생성.
+                //2026: 새로 생성한다기보다는 다시 세팅.
                 if (_f.Current.GetUseNum() != f.GetUseNum()) { _f.Current.SetUseNum(f.GetUseNum()); }
                 if (_f.Current.GetBuyNum() != f.GetBuyNum()) { _f.Current.SetBuyNum(f.GetBuyNum()); }
             }
@@ -1002,6 +1006,7 @@ public class FurnitureManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     public bool FC_UseBuyJudge(GameObject obj)
     {
         //구매량과 사용량을 체크하는 함수.
+        //2026: 구매한 수가 사용한 수 보다 적을 때 가구를 배치할 수 있어야 하기 때문에 확인한다.
         var _f = l_furnitureUI.GetEnumerator();
 
         for (int i = 0; i < l_furnitureUI.Count; i++)
@@ -1042,6 +1047,7 @@ public class FurnitureManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     public FurnitureClass FC_SearchFC(int sn)
     {
         //지금 받은 오브젝트와 동일한 오브젝트를 가진 클래스가 있는지 조사.
+        //2026: 오브젝트라기보다는 '오브젝트의 시리얼 넘버'가 있는지 조사.
 
         var _f = l_furnitureUI.GetEnumerator();
 
@@ -1064,7 +1070,7 @@ public class FurnitureManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         allPrice = 0;
         var _f = l_furnitureUI.GetEnumerator();
 
-        for(int i=0; i<l_furnitureUI.Count;i++)
+        for (int i = 0; i < l_furnitureUI.Count; i++)
         {
             _f.MoveNext();
 
@@ -1072,6 +1078,7 @@ public class FurnitureManager : MonoBehaviour, IBeginDragHandler, IDragHandler, 
             allPrice += _f.Current.GetUseNum() * _f.Current.GetPrice();
         }
 
+        //2026: FWTD는 변경과 동시에 값이 바뀌기 때문에 여기서 관리하지 않는다.
         GameManager.GM.SetFurniturePrice(allPrice + floorPrice + wallPrice + tablebarPrice + doorPrice);
     }
 
