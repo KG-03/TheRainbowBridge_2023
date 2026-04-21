@@ -49,6 +49,7 @@ public class NPCManager : MonoBehaviour
     bool isTrigger = false;
 
     //GameManager에서 정산이 끝나면 false로, NPC가 모두 나간 상태라면(하루가 끝났다면) true로.
+    //2026: GameManager에서 관리되는 건 아니고, GameManager에서 다음 날로 넘어갈 때, false를 받게 된다. true가 되는 시점은 여기서 관리.
     bool calculating = true;
 
     //단골손님용
@@ -89,12 +90,14 @@ public class NPCManager : MonoBehaviour
         if (npc_entireCount >= npc_todayCount)
         {
             //오늘 받을 수 있는 최대 인원 수에 도달했을 때.
+            //2026: 오늘 받을 수 있는 최대 인원 수에 도달했을 때, 현재 들어온 손님이 '마지막 손님'인 것을 명시하는 것.
             enableSpawn = false;
             timerOn = false;
             LastGuest();
 
             //다음 날로 넘어갈 수 있도록 조절.
             //NPC가 모두 퇴장한 시점이어야만 함... 현재는 허술하게 만들어진 상태. 추후 보강해야 함.
+            //오늘 다녀온 손님의 수와 최대 손님 수가 같고, 현재 가게에 손님이 없으며, 손님이 완전히 나갔을 때. (밖으로 나갈 때 게임 오브젝트가 삭제되므로)
             if (npc_entireCount == npc_todayCount && npc_curCount == 0 && interNPC == null)
             {
                 Calculate();
@@ -152,6 +155,7 @@ public class NPCManager : MonoBehaviour
         }
     }
 
+    //2026: 버튼에 대입하여 쓰던 디버그용 함수. 지금은 쓰지 않는다. 
     public void SpawnButton()
     {
         timerOn = true;
@@ -275,9 +279,10 @@ public class NPCManager : MonoBehaviour
 
     //SpawnNPC에 있던 랜덤 주문 코드 이전.
 
-
+    //2026: Calculate()와 LastGuset() 사이의 순서가 다소 헷갈림.
     void Calculate()
     {
+        //2026: 두 번 실행되지 않도록 한 것. Calculate() 함수를 지나가야 'NPO가 모두 나갔다'라고 명시된다.
         if (calculating == true) { return; }
         calculating = true;
         isLastGuest = true;
@@ -285,6 +290,7 @@ public class NPCManager : MonoBehaviour
         GameManager.GM.Calculate();
 
         //나중에 GamaManager로 오늘 온 손님과 떠난 손님을 전달할 수 있도록 할 것.
+        //2026: GameManager에서 NPCManager에 있는 값을 Get...하여 전달받는 중.
         //현재는 그냥 초기화.
         npc_entireCount = 0;
 
@@ -295,7 +301,10 @@ public class NPCManager : MonoBehaviour
     public void LastGuest()
     {
         //2026: 호출 당시, '현재 마지막 손님이 들어왔다'라는 명시가 없으면 함수는 실행되지 않는다.
-        //2026: 최 하단에 isLastsGuest를 false로 바꾸는 코드가 있는데, 그럴 거면 해당 변수 이름을 LastGuestTimerSetting 정도로 해도 괜찮지 않았을까 싶다.
+        //2026: isLastGuest를 true로 만드는 시점은 Calculation() 함수가 제대로 실행되는 시점이다.
+        //2026: isLastGuest는 게임 내내 true 값으로 동작하다가, 해당 함수를 실행하고 잠시 false로 전환된다. (두 번 실행되지 않기 위해서) 이후 Calcutate()에서 다시 true로 변경된다.
+        //2026: 최하단에 isLastsGuest를 false로 바꾸는 코드가 있는데, (두 번 실행되지 않기 위해서) 그럴 거면 해당 변수 이름을 LastGuestTimerSetting 정도로 해도 괜찮지 않았을까 싶다.
+        //2026: isLastGuest가 게임 내내 true로 동작해도 괜찮은 이유는 해당 함수 실행 조건 자체가 '받아야 하는 손님을 모두 받았을 때'이기 때문. 정산하며 해당 값이 모두 초기화되기 때문에 true로 진행되어도 문제 없다.
         if (isLastGuest == false) { return; }
 
         Debug.Log("확인");
