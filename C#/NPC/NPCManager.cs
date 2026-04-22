@@ -116,7 +116,7 @@ public class NPCManager : MonoBehaviour
         }
 
         Timer();
-
+        
         if (isTrigger == true)
         {
             if (!playerObj.GetComponent<Animator>().GetBool("ShakeIt"))
@@ -134,6 +134,8 @@ public class NPCManager : MonoBehaviour
     float timer = 5f;
     bool timerOn = false;
 
+    //2026: 손님이 들어오는 주기를 관리하는 함수. timerOn이 true일 때만 시간이 흐른다.
+    //2026: timerOn을 true로 만드는 시점은 OrderReceipt()에서 관리된다.
     void Timer()
     {
         if (timerOn == false) { return; }
@@ -167,16 +169,18 @@ public class NPCManager : MonoBehaviour
         audioSoure.Play();
 
         //추후 na_random 할 때, 0~6까지 읽어들이게끔 하여 6번이 나오면 단골 손님이 스폰될 수 있도록 조정할 것.
-        na_random = (int)UnityEngine.Random.Range(0, npc_prefab.Length + 1);
-
-        if (na_random != npc_prefab.Length)
+        //2026: 확률이 난해한 쪽에 속한다고 생각한다. 0~100까지의 수를 받아, 그 중에 20%만 단골 손님이 나오게끔 하는 방법도 있었을 것으로 보인다.
+        //2026: 본래 있던 코드를 수정한 상태. 가지고 있는 prefab의 수를 넘어가는 값을 받거나, 나올 수 없는 수에 접근하여 값을 관리하는 상황이었다.
+        na_random = (int)UnityEngine.Random.Range(0, npc_prefab.Length);
+        
+        if (na_random != npc_prefab.Length - 1)
         {
             GameObject newNpc = (GameObject)Instantiate(npc_prefab[na_random],
                                                     new Vector3(door.transform.position.x, door.transform.position.y - 0.5f, 0),
                                                     Quaternion.identity);
             npc.AddLast(newNpc);
         }
-        else if (na_random == npc_prefab.Length)
+        else if (na_random == npc_prefab.Length - 1)
         {
             nra_random = (int)UnityEngine.Random.Range(0, npc_regular_prefab.Length);
 
@@ -253,6 +257,7 @@ public class NPCManager : MonoBehaviour
     }
 
     //주문을 접수하는 코드. 대화창에서 'Yes'를 눌렀을 시점.
+    //2026: 게임의 구조가 변경됨에 따라 본 함수는 '제출 버튼'의 용도로 이용된다.
     public void OrderReceipt()
     {
         //주문 접수. 대화창에서 'Yes' 버튼을 눌렀을 때.
@@ -264,6 +269,7 @@ public class NPCManager : MonoBehaviour
 
         //GameManager.GM.SetCoin(100);
 
+        //2026: 아래의 두 if문은 본인이 만든 부분이 아닌 것으로 보인다.
         if (interNPC.GetComponent<NPC_AI>().luna == false)
         {
             timerOn = true;
