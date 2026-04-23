@@ -22,6 +22,8 @@ public enum NpcState
 public class NPC_AI : MonoBehaviour
 {
     //2026: 아래의 네 가지는 본인이 만든 것이 아니다. luna, choch, npcTrans, bubbleTrans와 관련된 코드가 나온다면, 타인의 작성이다.
+    //2026: [정정] 튜토리얼 관련 함수는 본인이 만든 것이 맞다. luna가 어떤 행동을 하는지는 본인이 설계했다.
+    //2026: 본 cs가 적용된 NPC prefab 중에서 본 prefab이 'luna'에 해당한다면 유니티 내에서 해당 bool 타입을 체크해준다.
     public bool luna;
     public bool choco;
     // 평가 대화 출력 관련
@@ -48,10 +50,12 @@ public class NPC_AI : MonoBehaviour
     Rigidbody2D nRid2D;
 
     //딜레이를 위해 만든 수.
+    //2026: 행동이 바로 실행되지 않고 1초의 딜레이 후에 실행된다.
     public float nDelay_MAX = 1f;
     float nDelay;
 
     //해당 NPC가 카운터에서 주문중이라면 true.
+    //2026: 주문이 완료되면 isOrder가 true로 변경된다.
     bool isOrder = false;
     bool orderComplete = false;
 
@@ -106,7 +110,8 @@ public class NPC_AI : MonoBehaviour
             targetObj = player;
             npcState = NpcState.DoorToPlayer;
             //2026: 해당 luna는 본인이 만든 것이 아니다.
-            if (luna == false) { Rating(); }
+            //2026: [정정] 튜토리얼 관련 부분은 본인이 만든 것이 맞으나, 만족도 출력은 본인이 한 게 아니다.
+            //if (luna == false) { Rating(); }
         }
 
         if (NPCManager.N.GetNPCAddress() == 5)
@@ -129,6 +134,7 @@ public class NPC_AI : MonoBehaviour
         }
         else if (choco == true) //이후에 만족도에 따라서 실행될지 안될지 결정할 것
         {
+            //2026: 본 choco 관련 부분은 본인이 만든 게 아니다.
             AI_ChocoAppear();
         }
         else
@@ -143,7 +149,8 @@ public class NPC_AI : MonoBehaviour
         // else { return; }
     }
 
-    private void Rating() // 만족도 출력 관련 함수
+    //2026: 본 함수는 본인이 만든 게 아니다.
+    /*private void Rating() // 만족도 출력 관련 함수
     {
         tmpText = GameObject.Find("RatingFurniture").GetComponent<TextMeshProUGUI>();
         rateStar = GameObject.Find("RateStar");
@@ -172,9 +179,10 @@ public class NPC_AI : MonoBehaviour
         Debug.Log(funiturePrice + "점");
 
         StartCoroutine(ResetTextAfterDelay(tmpText, rateStar, 2.0f)); // 1초 후에 다시 초기화되도록 수정
-    }
+    }*/
 
-    private IEnumerator ResetTextAfterDelay(TextMeshProUGUI tmpText, GameObject rateStar, float delay)
+    //2026: 본 함수는 본인이 만든 게 아니다.
+    /*private IEnumerator ResetTextAfterDelay(TextMeshProUGUI tmpText, GameObject rateStar, float delay)
     {
         yield return new WaitForSeconds(delay);
 
@@ -183,7 +191,7 @@ public class NPC_AI : MonoBehaviour
 
         // 다시 초기화된 텍스트를 표시하고 싶다면 아래의 코드를 추가
         tmpText.gameObject.SetActive(true);
-    }
+    }*/
 
     public void NPCSpeedDecision(float speed)
     {
@@ -207,6 +215,7 @@ public class NPC_AI : MonoBehaviour
         {
             if (isOrder == false)
             {
+                //2026: 본래 게임 구성이 '메뉴를 일정 시간 내에 받고 주문을 처리한다'라는 구조를 가지고 있었는데, 해당 내용이 변경되며 몇몇 변수의 사용이 달라진 상황이다.
                 //오더 대기시간(20f)이 넘는지 체크
                 order_timer -= Time.deltaTime;
 
@@ -251,6 +260,7 @@ public class NPC_AI : MonoBehaviour
                 if (isRegular == true)
                 {
                     //호감도를 임의로 10 올리고 있는 중. 추후 꼭 조절해야 함.
+                    //2026: 본 NPC가 '단골 손님'일 때 실행되는 부분.
                     NPCManager.N.SetRegularStay(regularNum, false);
                     NPCManager.N.SetRegularNPCIntimacy(regularNum, 10);
                 }
@@ -263,6 +273,7 @@ public class NPC_AI : MonoBehaviour
         }
         else if (npcState == NpcState.Wander)
         {
+            //2026: 게임 내에 배치된 의자에 손님이 모두 앉아있는 경우, NPC는 배회하게 된다. 
             NPCWander(w_random);
             RandomNum();
 
@@ -276,6 +287,7 @@ public class NPC_AI : MonoBehaviour
                     NPCManager.N.SetRegularStay(regularNum, false);
                 }
 
+                //2026: '현재 가게 안에 있는 손님 수 감소', '되돌아간 손님 수 증가', 결과적으로 'NPC가 밖으로 나서게 된다'.
                 NPCManager.N.NPCCountDeduction();
                 NPCManager.N.SetNPCReturning(NPCManager.N.GetNPCReturning() + 1);
                 npcState = NpcState.NoOrder;
@@ -347,6 +359,7 @@ public class NPC_AI : MonoBehaviour
 
     void NPCStayTable()
     {
+        //2026: FurnitureSet 함수에 있는 좌우 구분 함수를 이용해서 '어느 방향으로 앉을 것인지'를 결정한다. directionF는 이후 의자에 실제로 접촉했을 때 다시 이용된다.
         //평가를 어떻게 하는지는 모르겠으나... 평가?를 할 수 있도록 할 것.
         //앉아있는 스프라이트로 변경 + 앉아있는 것의 방향도 결정.
         if (directionF == "L")
@@ -368,6 +381,8 @@ public class NPC_AI : MonoBehaviour
 
     void RandomNum()
     {
+        //2026: 여기서 3초를 주기로 어떤 행동을 할 것인지 랜덤으로 결정한다.
+        //2026: 이 값은 NPCWander()로 전달되어 우로 움직이기, 좌로 움직이기, 가만히 서 있기의 세 동작을 하게 된다.
         if (random_start == 0)
         {
             w_random = UnityEngine.Random.Range(1, 4);
@@ -399,6 +414,7 @@ public class NPC_AI : MonoBehaviour
             }
             else if (this.transform.position.x >= door.transform.position.x + 1.1f)
             {
+                //2026: 너무 우로 이동하지 않게끔 고정.
                 random = 3;
             }
 
@@ -413,6 +429,7 @@ public class NPC_AI : MonoBehaviour
             }
             else if (this.transform.position.x <= door.transform.position.x - 1.1f)
             {
+                //2026: 너무 좌로 이동하지 않게끔 고정.
                 random = 3;
             }
 
@@ -427,6 +444,7 @@ public class NPC_AI : MonoBehaviour
 
     void NPCFilp()
     {
+        //2026: 이동 방향에 따라서 게임 오브젝트를 가로로 뒤집는 함수.
         //벡터 내적을 이용함.
         Vector3 dir = (targetObj.transform.position - this.transform.position).normalized;
         float dirDot = Vector3.Dot(this.transform.right.normalized, dir);
