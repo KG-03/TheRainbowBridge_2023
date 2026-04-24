@@ -475,6 +475,7 @@ public class NPC_AI : MonoBehaviour
 
     public void Satisfaction()
     {
+        //2026: 과거에 쓰였다가 지금은 쓰이지 않는 함수로 보인다.
         //이후 조건문에 따라서 값을 달리하면 될듯함.
         //현재 호출하면 그냥 만족도를 상승시키는 중.
 
@@ -483,6 +484,7 @@ public class NPC_AI : MonoBehaviour
         GameManager.GM.SetCoin(100);
     }
 
+    //2026: 아래의 코드는 본인이 만든 코드가 아닌 것으로 보인다.
     public void tutorial_luna()
     {
         NPCFilp();
@@ -531,6 +533,7 @@ public class NPC_AI : MonoBehaviour
         }
     }
 
+    //2026: 아래의 코드는 본인이 만든 코드가 아닌 것으로 보인다.
     public void AI_ChocoAppear()
     {
         NPCFilp();
@@ -581,10 +584,13 @@ public class NPC_AI : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        //2026: 오브젝트-오브젝트 사이에 충돌이 일어나면 호출되는 유니티 내부 함수.
+        //2026: 이 함수가 실행되려면 게임 오브젝트에 Collider이 필요하다.
         GameObject trigger = other.gameObject;
 
         if (trigger.name == "PlayerPos" && isOrder == false)
         {
+            //2026: luna와 choco 부분은 본인이 만든 것으로 보이지는 않는다.
             if (luna == true)
             {
                 if (nDelay <= 0) { nDelay = nDelay_MAX; }
@@ -611,6 +617,8 @@ public class NPC_AI : MonoBehaviour
             //플레이어랑 만나기 전까지 가구랑 부딪쳐도 무시할 수 있도록 코드가 짜여야만 함.
             NPCManager.N.speechBubble.SetActive(true);
 
+            //2026: 본래 '음료 제작 창으로 이동했다가 다시 메인 화면으로 돌아오는 구조'로 게임이 구상되어 있었는데, 한 화면에 모두 담게끔 변경되었다.
+            //2026: sceneChangeButton라는 이름은 그 흔적에 가깝다.
             NPCManager.N.sceneChangeButton.SetActive(true);
             NPCManager.N.SetInterNPC(this.gameObject);
             NPCManager.N.SetisTrigger(true);
@@ -655,6 +663,7 @@ public class NPC_AI : MonoBehaviour
                 return;
             }
 
+            //2026: 가게 안의 현재 손님 수 감소, 의자-NPC 사이의 연결 끊기, 연결 리스트에서 삭제 후 게임 오브젝트 삭제.
             NPCManager.N.NPCCountDeduction();
             targetF.GetComponent<FurnitureSet>().SetIsNPCState(false);
             NPCManager.N.DestroyNPC(this.gameObject);
