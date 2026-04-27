@@ -122,6 +122,7 @@ public class EventManager : MonoBehaviour
 
             if ((int)csv_prologue[scriptPointer]["Number"] == 0 && using_prologue[0].transform.position.y != 0)
             {
+                //2026: 시작 컷씬을 출력하는 부분
                 //Time.timeScale이 1이 아니면 카메라가 움직이지 않음...
                 Time.timeScale = 1;
                 readingState = false;
@@ -134,6 +135,7 @@ public class EventManager : MonoBehaviour
             }
             else if ((int)csv_prologue[scriptPointer]["Number"] == 0 && using_prologue[0].transform.position.y == 0)
             {
+                //2026: 컷씬을 모두 확인한 시점
                 readingState = true;
                 Transition(2);
             }
@@ -172,10 +174,10 @@ public class EventManager : MonoBehaviour
     bool lunaAnimation = false;
     bool loiAnimation = false;
 
-
     public void Tutorial()
     {
         //이벤트 시작 시점.
+        //2026: 이 시작 지점은 'csv 따라 다른 상황'이므로, csv가 변형되면 같이 수정되어야 한다.
         ReadingInitialization(23, "tutorial");
 
         if (Reading(csv_prologue) == false)
@@ -190,6 +192,7 @@ public class EventManager : MonoBehaviour
             }
             else if ((int)csv_prologue[scriptPointer]["Number"] == 15)
             {
+                //2026: 화면을 좀 더 잘 보여주기 위해서 기본적으로 '좌측'에 배치된 NPC 포트레이트를 '우측'에 배치하는 상황.
                 standingObject.transform.position = new Vector3(6.15f, 1);
                 standingObject.transform.localScale = new Vector3(-1, 1);
 
@@ -199,6 +202,7 @@ public class EventManager : MonoBehaviour
             }
             else if ((int)csv_prologue[scriptPointer]["Number"] == 16)
             {
+                //2026: 위에서 NPC 포트레이트를 이동시켰으니, 다시 원상복구 시키는 것.
                 standingObject.transform.position = new Vector3(-6.15f, 1);
                 standingObject.transform.localScale = new Vector3(1, 1);
             }
@@ -217,6 +221,8 @@ public class EventManager : MonoBehaviour
             else if ((int)csv_prologue[scriptPointer]["Number"] == 19)
             {
                 NPCManager.N.SetNPCManagerCalculating(true);
+                //2026: 19번에는 '음료 제작이 실패한 경우'를 담도록 되어 있으나, 회의 끝에 해당 내용은 파기하기로 결정되었다.
+                //2026: 때문에 어떤 경우든 바로 20번째 줄을 읽게 된다.
                 if (lunaMakeing == true && lunaCorrect == true)
                 {
                     Transition(1);
@@ -229,6 +235,7 @@ public class EventManager : MonoBehaviour
             }
             else if ((int)csv_prologue[scriptPointer]["Number"] == 27)
             {
+                //2026: 잠깐 모든 대화창을 내리고 화면에서 강조해야 하는 부분을 강조.
                 using_tutorial[2].SetActive(true);
                 using_tutorial[2].transform.GetChild(0).transform.localPosition = new Vector3(165, -355);
                 using_tutorial[2].transform.GetChild(0).transform.localRotation = Quaternion.identity;
@@ -590,6 +597,9 @@ public class EventManager : MonoBehaviour
     //값을 몇 칸 앞당길 것인지 결정
     public void Transition(int val)
     {
+        //2026: 단순히 값을 더해주는 함수.
+        //2026: 따라서, '얼마나 값을 더할 것인가'는 넣어둘 csv 파일이 어떻냐에 따라 계속 바뀌게 된다.
+        //2026: 다만 Update()에서 plusPointer를 통해 값을 바꿀 수 있기 때문에, 해당 함수가 어떤 의미가 있을지는 알 수 없다.
         scriptPointer += val;
     }
 
