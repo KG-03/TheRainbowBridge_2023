@@ -183,6 +183,7 @@ public class EventManager : MonoBehaviour
         if (Reading(csv_prologue) == false)
         {
             //아래로는 '해당 이벤트에서 보여줘야 하는 것들'
+            //2026: 'break' 등에서 처리되는 'NPC 이동'은 NPC_AI.cs에서 관리하는 중.
             if ((int)csv_prologue[scriptPointer]["Number"] == 2 && lunaAppearance != true)
             {
                 //2번째 파라미터는 문 위치임.
@@ -273,7 +274,7 @@ public class EventManager : MonoBehaviour
         }
     }
 
-
+    //2026: choco 관련 변수 및 함수는 본인이 만든 함수는 아닌 것으로 보인다.
     //초코 등장
     bool ChocoAppearance = false;
     public bool ChocoDirector = false;
@@ -412,6 +413,7 @@ public class EventManager : MonoBehaviour
         readingState = true;
     }
 
+    //2026: 튜토리얼 용으로 만든 버튼. '음료를 제공하는 버튼'에 적용시켜 두었다.
     public void Tutorial_BTN()
     {
         if (GameManager.GM.GetDebugging() == true) { return; }
@@ -422,6 +424,8 @@ public class EventManager : MonoBehaviour
 
         readingState = true;
 
+        //2026: 현재 읽고 있는 스크립트가 '어떤 스크립트인지' 명시가 되지 않았다.
+        //2026: 다만, 위에서 TutorialCheck가 되어 있다면 아래로는 실행되지 않으므로, '튜토리얼' 전용 버튼으로 동작할 수는 있을 것으로 보인다.
         if ((int)csv_prologue[scriptPointer]["Number"] == 18)
         {
             lunaMakeing = true;
@@ -444,6 +448,7 @@ public class EventManager : MonoBehaviour
             return;
         }
 
+        //2026: 해당 부분은 본인이 만든 부분은 아닌 것으로 보인다.
         if((int)csv_prologue[scriptPointer]["Number"] == 11) //초코가 음료를 제공받을 때
         {
             ChocoMaking = true;
@@ -452,6 +457,7 @@ public class EventManager : MonoBehaviour
 
             ChocoCorrect = true;
         }
+        
         Time.timeScale = 0;
     }
 
