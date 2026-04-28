@@ -9,6 +9,7 @@ using System.Threading;
 using TMPro;
 
 //2026: NPC의 현재 상태. 배회하는지, 문에서 바로 이동하는지, 테이블로 이동하는지, 문으로 다시 나가는지, 기타 등등.
+//2026: nil은 본인이 만든 상태가 아마 아닐 것이다. NPC(luna, choco)가 가만히 있는 시간이 필요했기 때문에 만들어진 상태다.
 public enum NpcState
 {
     nil,
@@ -499,8 +500,10 @@ public class NPC_AI : MonoBehaviour
         }
         else if (npcState == NpcState.nil)
         {
+            //2026: 음료 제조를 기다려야 하는 타이밍.
             if (EventManager.E.lunaMakeing == true)
             {
+                //2026: 음료 제조가 완료된 타이밍.
                 npcState = NpcState.PlayerToTable;
             }
         }
@@ -522,6 +525,7 @@ public class NPC_AI : MonoBehaviour
 
             if (GameManager.GM.GetTutorialCheck() == true)
             {
+                //2026: 설명이 끝나고 'npc 대기시간'을 생략하며 퇴장시킨다.
                 targetObj = door;
                 npc_animator.SetBool("Chair", false);
                 npcState = NpcState.TableToDoor;
